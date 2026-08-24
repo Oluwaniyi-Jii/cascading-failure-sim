@@ -3,6 +3,7 @@ import numpy as np
 from cascading_sim.graph import generate_network, SUPPORTED_TOPOLOGIES
 from cascading_sim.engine import simulate_cascade
 from cascading_sim.sweep import run_alpha_sweep
+from cascading_sim.visualize import plot_phase_transition, plot_network_state
 
 
 def main():
@@ -21,6 +22,10 @@ def main():
     parser.add_argument("--alpha-max", type=float, default=0.5, help="Max alpha for sweep")
     parser.add_argument("--alpha-steps", type=int, default=6, help="Number of alpha steps in sweep")
     parser.add_argument("--trials", type=int, default=3, help="Number of trial seeds per alpha step")
+
+    # Plotting flags
+    parser.add_argument("--plot", action="store_true", help="Generate Matplotlib/Seaborn plot for the run")
+    parser.add_argument("--output", type=str, default=None, help="Custom output PNG path")
 
     args = parser.parse_args()
 
@@ -52,6 +57,10 @@ def main():
             s_mean = res["steps_mean"][i]
             print(f"{a:<8.3f} | {f_mean:6.1f}% (±{f_std:4.1f})     | {g_mean:6.3f} (±{g_std:5.3f})    | {s_mean:<10.1f}")
 
+        if args.plot:
+            save_file = args.output or "outputs/phase_transition.png"
+            plot_phase_transition(res, save_path=save_file)
+
     else:
         G = generate_network(
             topology=args.topology,
@@ -82,6 +91,10 @@ def main():
             new_f = len(entry["new_failures"])
             tot_f = entry["total_failures"]
             print(f"  Step {step_idx}: +{new_f} new failure(s) -> {tot_f} total failed")
+
+        if args.plot:
+            save_file = args.output or "outputs/network_state.png"
+            plot_network_state(results["graph"], save_path=save_file)
 
 
 if __name__ == "__main__":
