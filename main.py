@@ -1,9 +1,26 @@
 import argparse
+import http.server
+import socketserver
+import webbrowser
 import numpy as np
 from cascading_sim.graph import generate_network, SUPPORTED_TOPOLOGIES
 from cascading_sim.engine import simulate_cascade
 from cascading_sim.sweep import run_alpha_sweep
 from cascading_sim.visualize import plot_phase_transition, plot_network_state
+
+
+def serve_web_ui(port=8000):
+    """Launch local web server to host interactive visualizer dashboard."""
+    url = f"http://localhost:{port}/visualizer.html"
+    print(f"\n🚀 Launching Interactive Visualizer at: {url}")
+    webbrowser.open(url)
+    
+    handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", port), handler) as httpd:
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\nShutting down web server.")
 
 
 def main():
@@ -23,11 +40,17 @@ def main():
     parser.add_argument("--alpha-steps", type=int, default=6, help="Number of alpha steps in sweep")
     parser.add_argument("--trials", type=int, default=3, help="Number of trial seeds per alpha step")
 
-    # Plotting flags
+    # Plotting & Web flags
     parser.add_argument("--plot", action="store_true", help="Generate Matplotlib/Seaborn plot for the run")
     parser.add_argument("--output", type=str, default=None, help="Custom output PNG path")
+    parser.add_argument("--web", "--serve", action="store_true", help="Launch interactive browser visualizer dashboard")
+    parser.add_argument("--port", type=int, default=8000, help="Port for web server")
 
     args = parser.parse_args()
+
+    if args.web:
+        serve_web_ui(port=args.port)
+        return
 
     if args.sweep:
         alpha_vals = np.linspace(args.alpha_min, args.alpha_max, args.alpha_steps)
@@ -99,3 +122,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
