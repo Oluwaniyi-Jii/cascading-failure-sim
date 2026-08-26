@@ -12,6 +12,7 @@ def run_alpha_sweep(
     load_strategy: str = "degree",
     initial_failures: int = 1,
     attack_strategy: str = "target_hub",
+    redistribution_model: str = "neighbor",
     num_trials: int = 5,
     base_seed: int = 42,
     **kwargs: Any
@@ -26,6 +27,7 @@ def run_alpha_sweep(
         load_strategy: 'degree', 'betweenness', or 'uniform'.
         initial_failures: Number of initial failed nodes.
         attack_strategy: 'target_hub' or 'random'.
+        redistribution_model: 'neighbor' or 'shortest_path'.
         num_trials: Number of random seed repetitions per alpha value.
         base_seed: Base seed for reproducibility.
 
@@ -63,6 +65,7 @@ def run_alpha_sweep(
                 G,
                 initial_failures=initial_failures,
                 strategy=attack_strategy,
+                redistribution_model=redistribution_model,
                 seed=seed
             )
             metrics = compute_cascade_metrics(sim_res)

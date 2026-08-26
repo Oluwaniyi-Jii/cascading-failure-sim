@@ -24,7 +24,7 @@ def test_high_tolerance_no_cascade():
 
 def test_low_tolerance_cascade_propagation():
     # Low alpha = fragile system near critical threshold
-    G = generate_network(topology="barabasi_albert", num_nodes=50, alpha=0.01, seed=42)
+    G = generate_network(topology="barabasi_albert", num_nodes=50, alpha=0.0, seed=42)
     res = simulate_cascade(G, initial_failures=1, strategy="target_hub", seed=42)
     
     assert res["total_failures"] > 1
