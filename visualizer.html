@@ -26,11 +26,11 @@
         header {
             background: #ffffff;
             border-bottom: 2px solid #e2e8f0;
-            padding: 12px 20px;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
+            gap: 16px;
             z-index: 10;
         }
 
@@ -85,7 +85,7 @@
             background: #ffffff;
             border: 2px solid #0f172a;
             border-radius: 6px;
-            width: 440px;
+            width: 460px;
             max-width: 90vw;
             padding: 24px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -116,7 +116,6 @@
             border-radius: 12px;
         }
 
-
         .modal-body {
             font-size: 13px;
             line-height: 1.5;
@@ -141,19 +140,18 @@
             cursor: pointer;
         }
 
-
         .controls {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
         }
 
         .control-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
+            gap: 6px;
+            font-size: 12px;
             font-weight: 500;
         }
 
@@ -170,7 +168,7 @@
 
         select, input[type="range"] {
             font-family: inherit;
-            font-size: 13px;
+            font-size: 12px;
             padding: 4px 8px;
             background: #ffffff;
             border: 1px solid #cbd5e1;
@@ -192,20 +190,20 @@
 
         .btn-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn {
             font-family: inherit;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 4px;
             border: 1px solid #0f172a;
             background: #ffffff;
             color: #0f172a;
             cursor: pointer;
-            transition: background 0.1s, color 0.1s;
+            transition: background 0.1s, color 0.1s, border-color 0.1s;
         }
 
         .btn:hover {
@@ -231,6 +229,18 @@
             background: #b91c1c;
         }
 
+        .btn-mode {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .btn-mode.active {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: #ffffff;
+        }
+
         /* Workspace Grid */
         .workspace {
             flex: 1;
@@ -247,7 +257,21 @@
         /* Graph SVG Elements */
         .edge {
             stroke: #cbd5e1;
+            stroke-width: 1.8px;
+            transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s;
+        }
+
+        .edge.hover-cut {
+            stroke: #ef4444 !important;
+            stroke-width: 3px !important;
+            cursor: pointer;
+        }
+
+        .edge.severed {
+            stroke: #94a3b8;
+            stroke-dasharray: 4,4;
             stroke-width: 1.5px;
+            opacity: 0.35;
         }
 
         .node {
@@ -257,20 +281,32 @@
             transition: fill 0.2s, r 0.2s;
         }
 
+        .flow-particle {
+            pointer-events: none;
+            filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.8));
+        }
+
         /* Bottom Telemetry Bar */
         footer {
             background: #ffffff;
             border-top: 2px solid #e2e8f0;
-            padding: 10px 20px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
             font-size: 13px;
+        }
+
+        .metrics-group {
+            display: flex;
+            align-items: center;
+            gap: 24px;
         }
 
         .metrics {
             display: flex;
-            gap: 24px;
+            gap: 20px;
         }
 
         .metric-unit {
@@ -281,12 +317,15 @@
 
         .metric-unit .lbl {
             color: #64748b;
-            font-size: 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .metric-unit .num {
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #0f172a;
         }
@@ -295,10 +334,34 @@
             color: #dc2626;
         }
 
+        /* Live Trajectory Mini Chart */
+        .chart-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 10px;
+        }
+
+        .chart-box .chart-lbl {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            writing-mode: horizontal-tb;
+        }
+
+        #chart-svg {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+        }
+
         /* Legend */
         .legend {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             font-size: 12px;
             color: #475569;
         }
@@ -328,6 +391,7 @@
             opacity: 0;
             transition: opacity 0.1s;
             z-index: 20;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -340,6 +404,15 @@
         </div>
 
         <div class="controls">
+            <div class="control-item">
+                <label for="preset">Preset</label>
+                <select id="preset">
+                    <option value="custom">Custom Settings</option>
+                    <option value="scale_free_hub">Scale-Free Hub Attack (BA)</option>
+                    <option value="low_buffer_crash">Low-Buffer Grid Crash (ER, α=0.02)</option>
+                    <option value="resilient_small_world">Resilient Small World (WS, α=0.30)</option>
+                </select>
+            </div>
 
             <div class="control-item">
                 <label for="topology">Topology</label>
@@ -363,7 +436,7 @@
             </div>
 
             <div class="control-item">
-                <label for="attack">Attack</label>
+                <label for="attack">Attack Strategy</label>
                 <select id="attack">
                     <option value="target_hub">Target Hub (Max Degree)</option>
                     <option value="random">Random Node</option>
@@ -371,10 +444,20 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-primary" id="btn-init">Reset Network</button>
+                <button class="btn btn-mode active" id="btn-mode-shock" title="Click nodes to shock/fail them">Shock ⚡</button>
+                <button class="btn btn-mode" id="btn-mode-cut" title="Click links to isolate/sever them">Cut Link ✂️</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="btn-init" title="Reset network state (Shortcut: R)">Reset</button>
                 <button class="btn btn-danger" id="btn-attack">Attack</button>
-                <button class="btn" id="btn-step">Step (t+1)</button>
-                <button class="btn" id="btn-play">Auto Play</button>
+                <button class="btn" id="btn-step" title="Advance one step (Shortcut: S)">Step (t+1)</button>
+                <button class="btn" id="btn-play" title="Auto run step loop (Shortcut: Space)">Auto Play</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="btn-export-svg" title="Save SVG Snapshot">Export SVG</button>
+                <button class="btn" id="btn-export-json" title="Download Trajectory JSON Log">Export JSON</button>
             </div>
         </div>
     </header>
@@ -385,18 +468,25 @@
     </div>
 
     <footer>
-        <div class="metrics">
-            <div class="metric-unit">
-                <span class="lbl">Step:</span>
-                <span id="m-step" class="num">0</span>
+        <div class="metrics-group">
+            <div class="metrics">
+                <div class="metric-unit">
+                    <span class="lbl">Step:</span>
+                    <span id="m-step" class="num">0</span>
+                </div>
+                <div class="metric-unit">
+                    <span class="lbl">Failed:</span>
+                    <span id="m-failed" class="num danger">0 / 80 (0.0%)</span>
+                </div>
+                <div class="metric-unit">
+                    <span class="lbl">Giant Component (P<sub>∞</sub>):</span>
+                    <span id="m-giant" class="num">1.000</span>
+                </div>
             </div>
-            <div class="metric-unit">
-                <span class="lbl">Failed:</span>
-                <span id="m-failed" class="num danger">0 / 80 (0.0%)</span>
-            </div>
-            <div class="metric-unit">
-                <span class="lbl">Giant Component (P<sub>∞</sub>):</span>
-                <span id="m-giant" class="num">1.000</span>
+
+            <div class="chart-box">
+                <span class="chart-lbl">Trajectory:</span>
+                <svg id="chart-svg" width="220" height="42"></svg>
             </div>
         </div>
 
@@ -410,15 +500,18 @@
             <div class="legend-item">
                 <div class="swatch" style="background: #dc2626"></div> Failed
             </div>
+            <div class="legend-item">
+                <div class="swatch" style="background: #94a3b8; border-radius: 0; width: 12px; height: 2px;"></div> Severed Link
+            </div>
         </div>
     </footer>
 
-    <!-- Onboarding Multi-Page Modal: "What This Is & Key Terms" -->
+    <!-- Onboarding Multi-Page Modal -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal">
             <div class="modal-header-nav">
                 <div class="modal-title" id="modal-page-title">What This Simulator Is</div>
-                <div class="page-indicator" id="modal-page-indicator">Page 1 of 4</div>
+                <div class="page-indicator" id="modal-page-indicator">Page 1 of 5</div>
             </div>
 
             <div class="modal-body" id="modal-page-content">
@@ -438,12 +531,13 @@
         </div>
     </div>
 
-
     <script>
         let nodes = [], links = [];
         let simulation, svg, container;
         let isPlaying = false, timer = null;
         let step = 0;
+        let interactionMode = "shock"; // "shock" or "cut"
+        let stepHistory = [];
 
         // Multi-Page Onboarding Modal Logic
         const modalOverlay = document.getElementById("modal-overlay");
@@ -492,14 +586,24 @@
                 `
             },
             {
-                title: "4. Simulator Controls & Interaction",
+                title: "4. Presets & Controls",
                 content: `
-                    <p>How to run experiments on the canvas:</p>
+                    <p>Quick experiment presets & simulation controls:</p>
                     <ul style="margin-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <li><strong>Direct Node Click:</strong> Click <em>any node directly on the graph</em> to trigger a failure at that specific node!</li>
-                        <li><strong>Attack Button:</strong> Strikes the largest hub or a random component.</li>
-                        <li><strong>Step (t+1) / Auto Play:</strong> Advance time to watch stress transfer wave-by-wave.</li>
-                        <li><strong>Footer Telemetry:</strong> Track failed node count and Giant Component size ($P_∞$).</li>
+                        <li><strong>Preset Dropdown:</strong> Load classic scenarios like <em>Scale-Free Hub Shock</em> or <em>Low-Buffer Grid Crash</em>.</li>
+                        <li><strong>Attack Button:</strong> Strikes the largest hub or a random node.</li>
+                        <li><strong>Step / Auto Play:</strong> Advance time step-by-step or auto-run.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "5. Circuit Breaker & Shortcuts",
+                content: `
+                    <p>Defense & keyboard shortcuts:</p>
+                    <ul style="margin-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+                        <li><strong>Cut Link Mode (✂️):</strong> Switch mode and click on edges to sever them, preventing load transfer to critical subgraphs!</li>
+                        <li><strong>Keyboard Shortcuts:</strong> Press <strong>[Space]</strong> to Play/Pause, <strong>[S]</strong> to Step (t+1), and <strong>[R]</strong> to Reset.</li>
+                        <li><strong>Export:</strong> Save SVG images or JSON trajectory logs anytime.</li>
                     </ul>
                 `
             }
@@ -528,24 +632,17 @@
         });
 
         btnModalPrev.addEventListener("click", () => {
-            if (currentModalPage > 0) {
-                renderModalPage(currentModalPage - 1);
-            }
+            if (currentModalPage > 0) renderModalPage(currentModalPage - 1);
         });
 
         btnModalNext.addEventListener("click", () => {
             if (currentModalPage < modalPages.length - 1) {
                 renderModalPage(currentModalPage + 1);
             } else {
-                if (chkDontShow.checked) {
-                    localStorage.setItem("hide_intro_dialog", "true");
-                }
+                if (chkDontShow.checked) localStorage.setItem("hide_intro_dialog", "true");
                 modalOverlay.style.display = "none";
             }
         });
-
-
-
 
         const viewport = d3.select(".workspace").node();
         const width = viewport.clientWidth;
@@ -559,6 +656,45 @@
         document.getElementById("nodes").addEventListener("input", (e) => document.getElementById("nodes-val").textContent = e.target.value);
         document.getElementById("alpha").addEventListener("input", (e) => document.getElementById("alpha-val").textContent = parseFloat(e.target.value).toFixed(2));
 
+        // Interaction mode selector
+        document.getElementById("btn-mode-shock").addEventListener("click", () => setInteractionMode("shock"));
+        document.getElementById("btn-mode-cut").addEventListener("click", () => setInteractionMode("cut"));
+
+        function setInteractionMode(mode) {
+            interactionMode = mode;
+            document.getElementById("btn-mode-shock").classList.toggle("active", mode === "shock");
+            document.getElementById("btn-mode-cut").classList.toggle("active", mode === "cut");
+            drawGraph();
+        }
+
+        // Preset Scenario Loader
+        document.getElementById("preset").addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (val === "scale_free_hub") {
+                document.getElementById("topology").value = "barabasi_albert";
+                document.getElementById("nodes").value = "80";
+                document.getElementById("nodes-val").textContent = "80";
+                document.getElementById("alpha").value = "0.15";
+                document.getElementById("alpha-val").textContent = "0.15";
+                document.getElementById("attack").value = "target_hub";
+            } else if (val === "low_buffer_crash") {
+                document.getElementById("topology").value = "erdos_renyi";
+                document.getElementById("nodes").value = "80";
+                document.getElementById("nodes-val").textContent = "80";
+                document.getElementById("alpha").value = "0.02";
+                document.getElementById("alpha-val").textContent = "0.02";
+                document.getElementById("attack").value = "random";
+            } else if (val === "resilient_small_world") {
+                document.getElementById("topology").value = "watts_strogatz";
+                document.getElementById("nodes").value = "80";
+                document.getElementById("nodes-val").textContent = "80";
+                document.getElementById("alpha").value = "0.30";
+                document.getElementById("alpha-val").textContent = "0.30";
+                document.getElementById("attack").value = "random";
+            }
+            if (val !== "custom") generateNetwork();
+        });
+
         function generateNetwork() {
             const topology = document.getElementById("topology").value;
             const N = parseInt(document.getElementById("nodes").value);
@@ -571,7 +707,7 @@
                 let degrees = new Array(N).fill(0);
                 for (let i = 0; i < Math.min(3, N); i++) {
                     for (let j = i + 1; j < Math.min(3, N); j++) {
-                        links.push({ source: i, target: j });
+                        links.push({ source: i, target: j, severed: false });
                         degrees[i]++; degrees[j]++;
                     }
                 }
@@ -587,20 +723,20 @@
                         }
                     }
                     targets.forEach(t => {
-                        links.push({ source: i, target: t });
+                        links.push({ source: i, target: t, severed: false });
                         degrees[i]++; degrees[t]++;
                     });
                 }
             } else if (topology === "erdos_renyi") {
                 for (let i = 0; i < N; i++) {
                     for (let j = i + 1; j < N; j++) {
-                        if (Math.random() < 0.05) links.push({ source: i, target: j });
+                        if (Math.random() < 0.05) links.push({ source: i, target: j, severed: false });
                     }
                 }
             } else {
                 for (let i = 0; i < N; i++) {
                     for (let j = 1; j <= 2; j++) {
-                        links.push({ source: i, target: (i + j) % N });
+                        links.push({ source: i, target: (i + j) % N, severed: false });
                     }
                 }
             }
@@ -622,6 +758,8 @@
             });
 
             step = 0;
+            stepHistory = [];
+            recordStepHistory();
             updateMetrics();
             drawGraph();
         }
@@ -633,7 +771,21 @@
                 .selectAll("line")
                 .data(links)
                 .join("line")
-                .attr("class", "edge");
+                .attr("class", d => `edge ${d.severed ? 'severed' : ''}`)
+                .on("mouseover", function (e, d) {
+                    if (interactionMode === "cut") {
+                        d3.select(this).classed("hover-cut", true);
+                    }
+                })
+                .on("mouseout", function () {
+                    d3.select(this).classed("hover-cut", false);
+                })
+                .on("click", (e, d) => {
+                    if (interactionMode === "cut") {
+                        d.severed = !d.severed;
+                        drawGraph();
+                    }
+                });
 
             const node = container.append("g")
                 .selectAll("circle")
@@ -648,21 +800,26 @@
                     .on("end", (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }));
 
             node.on("click", (e, d) => {
-                // Click to manually fail a node
-                if (d.status === "healthy") {
-                    d.status = "failed";
-                    step = Math.max(1, step);
-                    updateVisuals();
-                    updateMetrics();
+                if (interactionMode === "shock") {
+                    if (d.status === "healthy") {
+                        d.status = "failed";
+                        triggerShockWave(d);
+                        step = Math.max(1, step);
+                        recordStepHistory();
+                        updateVisuals();
+                        updateMetrics();
+                    }
                 }
             });
 
             node.on("mouseover", (e, d) => {
+                const remBuf = (d.capacity - d.load).toFixed(2);
+                const bufStr = d.status === "failed" ? "0.00 (FAILED)" : (remBuf >= 0 ? `+${remBuf}` : `${remBuf} (OVERLOAD)`);
                 d3.select("#tooltip")
                     .style("opacity", 1)
                     .style("left", (e.pageX + 12) + "px")
                     .style("top", (e.pageY - 12) + "px")
-                    .html(`Node #${d.id}<br/>Status: ${d.status.toUpperCase()}<br/>Load: ${d.load.toFixed(2)} / ${d.capacity.toFixed(2)}`);
+                    .html(`Node #${d.id}<br/>Status: ${d.status.toUpperCase()}<br/>Load: ${d.load.toFixed(2)} / ${d.capacity.toFixed(2)}<br/>Buffer Margin: ${bufStr}`);
             }).on("mouseout", () => d3.select("#tooltip").style("opacity", 0));
 
             simulation = d3.forceSimulation(nodes)
@@ -673,6 +830,36 @@
                     link.attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y);
                     node.attr("cx", d => d.x).attr("cy", d => d.y);
                 });
+        }
+
+        function triggerShockWave(d) {
+            container.append("circle")
+                .attr("cx", d.x || width / 2)
+                .attr("cy", d.y || height / 2)
+                .attr("r", Math.max(5, Math.sqrt(d.capacity) * 2.8))
+                .attr("fill", "none")
+                .attr("stroke", "#dc2626")
+                .attr("stroke-width", 3)
+                .transition().duration(500)
+                .attr("r", 45)
+                .style("opacity", 0)
+                .remove();
+        }
+
+        function animateFlowParticle(source, target) {
+            if (!source.x || !target.x) return;
+            container.append("circle")
+                .attr("class", "flow-particle")
+                .attr("cx", source.x)
+                .attr("cy", source.y)
+                .attr("r", 4)
+                .attr("fill", "#f59e0b")
+                .transition()
+                .duration(420)
+                .ease(d3.easeQuadOut)
+                .attr("cx", target.x)
+                .attr("cy", target.y)
+                .remove();
         }
 
         function getNodeColor(d) {
@@ -693,7 +880,9 @@
 
             if (target) {
                 target.status = "failed";
+                triggerShockWave(target);
                 step = 1;
+                recordStepHistory();
                 updateVisuals();
                 updateMetrics();
             }
@@ -710,25 +899,69 @@
             newlyFailed.forEach(fNode => {
                 let shed = fNode.load;
                 fNode.load = 0;
-                let neighbors = links.filter(l => l.source.id === fNode.id || l.target.id === fNode.id)
-                                     .map(l => l.source.id === fNode.id ? l.target : l.source)
-                                     .filter(nbr => nbr.status === "healthy");
+                let activeLinks = links.filter(l => !l.severed && (l.source.id === fNode.id || l.target.id === fNode.id));
+                let neighbors = activeLinks
+                    .map(l => l.source.id === fNode.id ? l.target : l.source)
+                    .filter(nbr => nbr.status === "healthy");
 
                 if (neighbors.length > 0 && shed > 0) {
                     let totalRem = neighbors.reduce((acc, n) => acc + Math.max(0, n.capacity - n.load), 0);
                     neighbors.forEach(nbr => {
                         let rem = Math.max(0, nbr.capacity - nbr.load);
-                        nbr.load += totalRem > 0 ? shed * (rem / totalRem) : shed / neighbors.length;
+                        let share = totalRem > 0 ? shed * (rem / totalRem) : shed / neighbors.length;
+                        nbr.load += share;
+                        animateFlowParticle(fNode, nbr);
                     });
                 }
             });
 
             nodes.forEach(n => {
-                if (n.status === "healthy" && n.load > n.capacity) n.status = "failed";
+                if (n.status === "healthy" && n.load > n.capacity) {
+                    n.status = "failed";
+                    triggerShockWave(n);
+                }
             });
 
+            recordStepHistory();
             updateVisuals();
             updateMetrics();
+        }
+
+        function recordStepHistory() {
+            const failed = nodes.filter(n => n.status === "failed").length;
+            const pct = (failed / nodes.length) * 100;
+            const giantCC = 1.0 - (failed / nodes.length);
+            stepHistory.push({ step, failedPct: pct, giantCC });
+            renderTrajectoryChart();
+        }
+
+        function renderTrajectoryChart() {
+            const chartSvg = d3.select("#chart-svg");
+            chartSvg.selectAll("*").remove();
+
+            const cW = 220, cH = 42;
+            const maxS = Math.max(5, ...stepHistory.map(d => d.step));
+
+            const xScale = d3.scaleLinear().domain([0, maxS]).range([4, cW - 4]);
+            const yScalePct = d3.scaleLinear().domain([0, 100]).range([cH - 4, 4]);
+            const yScaleGiant = d3.scaleLinear().domain([0, 1]).range([cH - 4, 4]);
+
+            const linePct = d3.line().x(d => xScale(d.step)).y(d => yScalePct(d.failedPct)).curve(d3.curveMonotoneX);
+            const lineGiant = d3.line().x(d => xScale(d.step)).y(d => yScaleGiant(d.giantCC)).curve(d3.curveMonotoneX);
+
+            chartSvg.append("path")
+                .datum(stepHistory)
+                .attr("fill", "none")
+                .attr("stroke", "#2563eb")
+                .attr("stroke-width", 1.5)
+                .attr("d", lineGiant);
+
+            chartSvg.append("path")
+                .datum(stepHistory)
+                .attr("fill", "none")
+                .attr("stroke", "#dc2626")
+                .attr("stroke-width", 1.5)
+                .attr("d", linePct);
         }
 
         function updateVisuals() {
@@ -752,10 +985,58 @@
             else clearInterval(timer);
         }
 
+        // Export Functions
+        document.getElementById("btn-export-svg").addEventListener("click", () => {
+            const svgNode = document.getElementById("canvas");
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svgNode);
+            const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `cascade_graph_step_${step}.svg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        document.getElementById("btn-export-json").addEventListener("click", () => {
+            const payload = {
+                topology: document.getElementById("topology").value,
+                nodes_count: nodes.length,
+                alpha: parseFloat(document.getElementById("alpha").value),
+                step: step,
+                step_history: stepHistory,
+                severed_links_count: links.filter(l => l.severed).length,
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `cascade_telemetry_step_${step}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        // Event Listeners
         document.getElementById("btn-init").addEventListener("click", generateNetwork);
         document.getElementById("btn-attack").addEventListener("click", triggerAttack);
         document.getElementById("btn-step").addEventListener("click", stepCascade);
         document.getElementById("btn-play").addEventListener("click", togglePlay);
+
+        // Keyboard Shortcuts
+        window.addEventListener("keydown", (e) => {
+            if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+            if (e.code === "Space") {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === "KeyS" || e.key === "s" || e.key === "S") {
+                stepCascade();
+            } else if (e.code === "KeyR" || e.key === "r" || e.key === "R") {
+                generateNetwork();
+            }
+        });
 
         generateNetwork();
     </script>
