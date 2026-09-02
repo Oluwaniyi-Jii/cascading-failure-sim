@@ -407,6 +407,69 @@
             fill: var(--text-main);
         }
 
+        /* Interactive Spotlight Tour Layer Styles */
+        .tour-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 200;
+            pointer-events: auto;
+        }
+
+        .tour-spotlight-box {
+            position: fixed;
+            border: 2px solid var(--color-active);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 201;
+        }
+
+        .tour-card {
+            position: fixed;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            width: 350px;
+            padding: 14px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            z-index: 202;
+            font-family: var(--font-sans);
+        }
+
+        .tour-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .tour-step-badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .tour-card-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-main);
+        }
+
+        .tour-card-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .tour-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         /* Documentation Modal */
         .modal-overlay {
             position: fixed;
@@ -465,6 +528,7 @@
                 <button id="btn-export-json" class="btn">Export JSON</button>
             </div>
 
+            <button id="btn-start-tour" class="btn">Guided Tour</button>
             <button id="btn-open-help" class="btn">Docs</button>
         </div>
     </header>
@@ -526,7 +590,7 @@
 
             <div class="sidebar-block" style="flex:1;">
                 <div class="block-title">Component Inspector</div>
-                <table class="inspector-table">
+                <table class="inspector-table" id="inspector-card">
                     <tr><td class="inspector-key">Target Node</td><td class="inspector-val" id="insp-id">Hover Node</td></tr>
                     <tr><td class="inspector-key">Component Class</td><td class="inspector-val" id="insp-role">--</td></tr>
                     <tr><td class="inspector-key">Status</td><td class="inspector-val" id="insp-status">--</td></tr>
@@ -578,6 +642,27 @@
             </div>
         </div>
     </footer>
+
+    <!-- Interactive Tour Layer Container -->
+    <div id="tour-overlay" class="tour-overlay" style="display:none;">
+        <div id="tour-spotlight" class="tour-spotlight-box"></div>
+        <div id="tour-card" class="tour-card">
+            <div class="tour-card-header">
+                <div class="tour-card-title" id="tour-title">1. Industry Physics Domain Skins</div>
+                <span class="tour-step-badge" id="tour-badge">Step 1 of 10</span>
+            </div>
+            <div class="tour-card-text" id="tour-text">
+                Select real-world physics models: Electrical Power Grid (MW/Hz), Interbank Financial Network ($B), Cloud Microservices (RPS/Latency), and Global Supply Chain (TEU Cargo).
+            </div>
+            <div class="tour-card-footer">
+                <button id="btn-tour-skip" class="btn" style="color:var(--text-subtle);">Skip Tour</button>
+                <div class="btn-group">
+                    <button id="btn-tour-prev" class="btn">Back</button>
+                    <button id="btn-tour-next" class="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-overlay" class="modal-overlay" style="display:none;">
         <div class="modal">
@@ -646,6 +731,124 @@
             }
         };
 
+        // Expanded 10-Step Interactive Guided Tour Engine
+        let currentTourStep = 0;
+        const tourSteps = [
+            {
+                target: "#domain",
+                title: "1. Industry Physics Domain Skins",
+                text: "Select real-world physics models: Electrical Power Grid (MW/Hz), Interbank Financial Network ($B), Cloud Microservices (RPS/Latency), and Global Supply Chain (TEU Cargo)."
+            },
+            {
+                target: "#preset",
+                title: "2. Pre-configured Presets",
+                text: "Instantly load classic network vulnerability benchmarks such as Scale-Free Hub Shock or Low-Buffer Saturation Collapse."
+            },
+            {
+                target: "#topology",
+                title: "3. Topology Generator & Buffer Sliders",
+                text: "Select graph topology algorithms (Barabási–Albert, Erdős–Rényi, Watts–Strogatz), adjust node count (N), and tune capacity buffer margin (alpha)."
+            },
+            {
+                target: "#attack",
+                title: "4. Target Shock Strategy Selection",
+                text: "Choose between targeting the highest degree hub node (simulating targeted infrastructure strike) or a random component fault."
+            },
+            {
+                target: "#btn-mode-shock",
+                title: "5. Operator Interaction Modes",
+                text: "Switch between 'Shock Target' to click and trip individual nodes, or 'Isolate Edge' (Circuit Breaker) to cut links and block stress transfer."
+            },
+            {
+                target: "#btn-init",
+                title: "6. Network State Reset",
+                text: "Re-generate the graph and restore all nodes and links to initial nominal equilibrium [Shortcut: R]."
+            },
+            {
+                target: "#btn-attack",
+                title: "7. Cascade Run Controls",
+                text: "Strike the target hub, advance time step-by-step [Shortcut: S], or auto-run the iterative load redistribution loop [Shortcut: Space]."
+            },
+            {
+                target: "#btn-export-svg",
+                title: "8. Data & Canvas Export Tools",
+                text: "Export high-resolution SVG vector network snapshots or download full JSON trajectory telemetry logs for offline analysis."
+            },
+            {
+                target: "#inspector-card",
+                title: "9. Component Telemetry Inspector",
+                text: "Hover over any node in the canvas to inspect its role class, operational status, current load vs capacity limit, and remaining headroom buffer."
+            },
+            {
+                target: ".audit-panel",
+                title: "10. Real-Time Audit Log & Telemetry Sparklines",
+                text: "Monitor live timestamped event logs, tripped component counters, giant component size (P_inf), and real-world KPI sparkline trajectories."
+            }
+        ];
+
+        function startTour() {
+            currentTourStep = 0;
+            document.getElementById("tour-overlay").style.display = "block";
+            renderTourStep(0);
+        }
+
+        function renderTourStep(index) {
+            currentTourStep = index;
+            const stepData = tourSteps[index];
+            const targetEl = document.querySelector(stepData.target);
+            if (!targetEl) return;
+
+            const rect = targetEl.getBoundingClientRect();
+            const spotlight = document.getElementById("tour-spotlight");
+            const card = document.getElementById("tour-card");
+
+            spotlight.style.top = (rect.top - 4) + "px";
+            spotlight.style.left = (rect.left - 4) + "px";
+            spotlight.style.width = (rect.width + 8) + "px";
+            spotlight.style.height = (rect.height + 8) + "px";
+
+            document.getElementById("tour-title").textContent = stepData.title;
+            document.getElementById("tour-badge").textContent = `Step ${index + 1} of ${tourSteps.length}`;
+            document.getElementById("tour-text").textContent = stepData.text;
+
+            document.getElementById("btn-tour-prev").style.display = index === 0 ? "none" : "inline-block";
+            document.getElementById("btn-tour-next").textContent = index === tourSteps.length - 1 ? "Finish Tour" : "Next";
+
+            // Position Tour Card Dynamically
+            let cardTop = rect.bottom + 12;
+            let cardLeft = rect.left;
+
+            if (cardTop + 180 > window.innerHeight) {
+                cardTop = Math.max(10, rect.top - 190);
+            }
+            if (cardLeft + 360 > window.innerWidth) {
+                cardLeft = Math.max(10, window.innerWidth - 370);
+            }
+
+            card.style.top = cardTop + "px";
+            card.style.left = cardLeft + "px";
+        }
+
+        function endTour() {
+            document.getElementById("tour-overlay").style.display = "none";
+            localStorage.setItem("has_seen_tour", "true");
+        }
+
+        document.getElementById("btn-tour-prev").addEventListener("click", () => {
+            if (currentTourStep > 0) renderTourStep(currentTourStep - 1);
+        });
+
+        document.getElementById("btn-tour-next").addEventListener("click", () => {
+            if (currentTourStep < tourSteps.length - 1) {
+                renderTourStep(currentTourStep + 1);
+            } else {
+                endTour();
+            }
+        });
+
+        document.getElementById("btn-tour-skip").addEventListener("click", endTour);
+        document.getElementById("btn-start-tour").addEventListener("click", startTour);
+
         const modalOverlay = document.getElementById("modal-overlay");
         const chkDontShow = document.getElementById("chk-dont-show");
         const btnModalPrev = document.getElementById("btn-modal-prev");
@@ -669,12 +872,6 @@
             pageContent.innerHTML = page.content;
             btnModalPrev.style.display = index === 0 ? "none" : "inline-block";
             btnModalNext.textContent = index === modalPages.length - 1 ? "Finish" : "Next";
-        }
-
-        if (localStorage.getItem("hide_intro_dialog") === "true") {
-            modalOverlay.style.display = "none";
-        } else {
-            renderModalPage(0);
         }
 
         btnOpenHelp.addEventListener("click", () => {
@@ -811,7 +1008,7 @@
             step = 0;
             stepHistory = [];
             auditEvents = [];
-            logAuditEvent("INFO", `Network generated (${N} nodes, alpha=${alpha.toFixed(2)}, topo=${topology})`);
+            logAuditEvent("INFO", `Network initialized (${N} nodes, alpha=${alpha.toFixed(2)}, topo=${topology})`);
             recordStepHistory();
             updateMetrics();
             drawGraph();
@@ -1092,9 +1289,15 @@
             if (e.code === "Space") { e.preventDefault(); togglePlay(); }
             else if (e.code === "KeyS" || e.key === "s" || e.key === "S") stepCascade();
             else if (e.code === "KeyR" || e.key === "r" || e.key === "R") generateNetwork();
+            else if (e.code === "Escape") endTour();
         });
 
         generateNetwork();
+
+        // First Launch Tour Check
+        if (localStorage.getItem("has_seen_tour") !== "true") {
+            setTimeout(startTour, 350);
+        }
     </script>
 </body>
 </html>
