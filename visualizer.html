@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cascading Failure Simulator</title>
+    <title>Cascading Failure Simulator - Operations Control Center</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         * {
@@ -14,18 +14,18 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
+            background-color: #090d16;
+            color: #f1f5f9;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* Top Control Bar */
+        /* Technical Header Bar */
         header {
-            background: #ffffff;
-            border-bottom: 2px solid #e2e8f0;
+            background: #0f172a;
+            border-bottom: 1px solid #1e293b;
             padding: 10px 20px;
             display: flex;
             align-items: center;
@@ -37,23 +37,34 @@
         .brand-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .brand {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: -0.3px;
-            color: #0f172a;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #f8fafc;
+        }
+
+        .tag-version {
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 11px;
+            background: #1e293b;
+            color: #38bdf8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #334155;
         }
 
         .btn-help {
             width: 22px;
             height: 22px;
-            border-radius: 50%;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            color: #475569;
+            border-radius: 3px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #94a3b8;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
@@ -63,8 +74,8 @@
         }
 
         .btn-help:hover {
-            background: #f1f5f9;
-            color: #0f172a;
+            background: #334155;
+            color: #f8fafc;
         }
 
         /* Modal Styles */
@@ -74,7 +85,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(3, 7, 18, 0.85);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -82,13 +93,13 @@
         }
 
         .modal {
-            background: #ffffff;
-            border: 2px solid #0f172a;
-            border-radius: 6px;
-            width: 460px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            width: 480px;
             max-width: 90vw;
             padding: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         .modal-header-nav {
@@ -97,35 +108,37 @@
             justify-content: space-between;
             margin-bottom: 14px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #1e293b;
         }
 
         .modal-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            color: #0f172a;
+            color: #f8fafc;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .page-indicator {
             font-size: 11px;
             font-weight: 600;
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-            color: #64748b;
-            background: #f1f5f9;
+            color: #38bdf8;
+            background: #1e293b;
             padding: 2px 8px;
-            border-radius: 12px;
+            border-radius: 3px;
         }
 
         .modal-body {
             font-size: 13px;
             line-height: 1.5;
-            color: #334155;
+            color: #cbd5e1;
         }
 
         .modal-footer {
             margin-top: 20px;
             padding-top: 14px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #1e293b;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -143,7 +156,7 @@
         .controls {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
@@ -156,13 +169,16 @@
         }
 
         .control-item label {
-            color: #475569;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .control-item .val {
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
             font-weight: 700;
-            color: #0f172a;
+            color: #38bdf8;
             min-width: 32px;
         }
 
@@ -170,27 +186,27 @@
             font-family: inherit;
             font-size: 12px;
             padding: 4px 8px;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            color: #0f172a;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 3px;
+            color: #f8fafc;
             outline: none;
         }
 
         select:focus {
-            border-color: #0f172a;
+            border-color: #38bdf8;
         }
 
         input[type="range"] {
             padding: 0;
             height: 6px;
-            accent-color: #0f172a;
+            accent-color: #38bdf8;
             cursor: pointer;
         }
 
         .btn-group {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
 
         .btn {
@@ -198,25 +214,27 @@
             font-size: 12px;
             font-weight: 600;
             padding: 5px 12px;
-            border-radius: 4px;
-            border: 1px solid #0f172a;
-            background: #ffffff;
-            color: #0f172a;
+            border-radius: 3px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #f8fafc;
             cursor: pointer;
-            transition: background 0.1s, color 0.1s, border-color 0.1s;
+            transition: background 0.1s, border-color 0.1s;
         }
 
         .btn:hover {
-            background: #f1f5f9;
+            background: #334155;
+            border-color: #475569;
         }
 
         .btn-primary {
-            background: #0f172a;
+            background: #2563eb;
+            border-color: #2563eb;
             color: #ffffff;
         }
 
         .btn-primary:hover {
-            background: #1e293b;
+            background: #1d4ed8;
         }
 
         .btn-danger {
@@ -230,14 +248,14 @@
         }
 
         .btn-mode {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            color: #475569;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
         }
 
         .btn-mode.active {
-            background: #0f172a;
-            border-color: #0f172a;
+            background: #0284c7;
+            border-color: #0284c7;
             color: #ffffff;
         }
 
@@ -246,7 +264,7 @@
             flex: 1;
             display: flex;
             position: relative;
-            background: #f8fafc;
+            background: #090d16;
         }
 
         #canvas {
@@ -256,8 +274,8 @@
 
         /* Graph SVG Elements */
         .edge {
-            stroke: #cbd5e1;
-            stroke-width: 1.8px;
+            stroke: #1e293b;
+            stroke-width: 1.5px;
             transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s;
         }
 
@@ -268,29 +286,29 @@
         }
 
         .edge.severed {
-            stroke: #94a3b8;
+            stroke: #475569;
             stroke-dasharray: 4,4;
             stroke-width: 1.5px;
-            opacity: 0.35;
+            opacity: 0.4;
         }
 
         .node {
-            stroke: #ffffff;
-            stroke-width: 2px;
+            stroke: #090d16;
+            stroke-width: 1.5px;
             cursor: pointer;
             transition: fill 0.2s, r 0.2s;
         }
 
         .flow-particle {
             pointer-events: none;
-            filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.8));
+            filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.8));
         }
 
-        /* Bottom Telemetry Bar */
+        /* Technical Telemetry Dashboard Bar */
         footer {
-            background: #ffffff;
-            border-top: 2px solid #e2e8f0;
-            padding: 8px 20px;
+            background: #0f172a;
+            border-top: 1px solid #1e293b;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -298,26 +316,21 @@
             font-size: 13px;
         }
 
-        .metrics-group {
+        .telemetry-left {
             display: flex;
             align-items: center;
             gap: 24px;
         }
 
-        .metrics {
-            display: flex;
-            gap: 20px;
-        }
-
         .metric-unit {
             display: flex;
-            align-items: baseline;
-            gap: 6px;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .metric-unit .lbl {
             color: #64748b;
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
@@ -327,34 +340,72 @@
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
             font-size: 14px;
             font-weight: 700;
-            color: #0f172a;
+            color: #f8fafc;
         }
 
         .metric-unit .num.danger {
-            color: #dc2626;
+            color: #ef4444;
         }
 
-        /* Live Trajectory Mini Chart */
+        .metric-unit .num.warning {
+            color: #f59e0b;
+        }
+
+        /* Technical Dial Gauge */
+        .gauge-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 4px 10px;
+        }
+
+        .gauge-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gauge-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .gauge-value {
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .gauge-value.critical {
+            color: #ef4444;
+        }
+
+        /* Trajectory Area Chart Box */
         .chart-box {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            gap: 10px;
+            background: #1e293b;
+            border: 1px solid #334155;
             border-radius: 4px;
             padding: 4px 10px;
         }
 
         .chart-box .chart-lbl {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: #64748b;
-            writing-mode: horizontal-tb;
+            text-transform: uppercase;
         }
 
         #chart-svg {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
+            background: #090d16;
+            border: 1px solid #334155;
             border-radius: 3px;
         }
 
@@ -362,8 +413,8 @@
         .legend {
             display: flex;
             gap: 14px;
-            font-size: 12px;
-            color: #475569;
+            font-size: 11px;
+            color: #94a3b8;
         }
 
         .legend-item {
@@ -373,25 +424,26 @@
         }
 
         .swatch {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
         }
 
         /* Tooltip */
         .tooltip {
             position: absolute;
             background: #0f172a;
-            color: #ffffff;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 12px;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 3px;
+            font-size: 11px;
             font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.1s;
             z-index: 20;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -400,17 +452,28 @@
     <header>
         <div class="brand-area">
             <div class="brand">Cascading Failure Simulator</div>
-            <button class="btn-help" id="btn-open-help" title="What is this?">?</button>
+            <span class="tag-version">v2.0 Control Center</span>
+            <button class="btn-help" id="btn-open-help" title="System Documentation">?</button>
         </div>
 
         <div class="controls">
             <div class="control-item">
-                <label for="preset">Preset</label>
+                <label for="domain">Domain Skin</label>
+                <select id="domain">
+                    <option value="power_grid">Electrical Power Grid (MW / Hz)</option>
+                    <option value="finance">Interbank Financial System ($B USD)</option>
+                    <option value="cloud">Cloud Microservices (RPS / Latency)</option>
+                    <option value="supply_chain">Global Supply Chain (TEU Cargo)</option>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label for="preset">Preset Scenario</label>
                 <select id="preset">
-                    <option value="custom">Custom Settings</option>
-                    <option value="scale_free_hub">Scale-Free Hub Attack (BA)</option>
-                    <option value="low_buffer_crash">Low-Buffer Grid Crash (ER, α=0.02)</option>
-                    <option value="resilient_small_world">Resilient Small World (WS, α=0.30)</option>
+                    <option value="custom">Custom Configuration</option>
+                    <option value="scale_free_hub">Scale-Free Hub Vulnerability (BA)</option>
+                    <option value="low_buffer_crash">Low-Buffer Saturation Crash (ER)</option>
+                    <option value="resilient_small_world">Resilient Small World (WS)</option>
                 </select>
             </div>
 
@@ -418,7 +481,7 @@
                 <label for="topology">Topology</label>
                 <select id="topology">
                     <option value="barabasi_albert">Barabási–Albert (Scale-Free)</option>
-                    <option value="erdos_renyi">Erdős–Rényi (Random)</option>
+                    <option value="erdos_renyi">Erdős–Rényi (Random Grid)</option>
                     <option value="watts_strogatz">Watts–Strogatz (Small World)</option>
                 </select>
             </div>
@@ -436,28 +499,28 @@
             </div>
 
             <div class="control-item">
-                <label for="attack">Attack Strategy</label>
+                <label for="attack">Shock Vector</label>
                 <select id="attack">
-                    <option value="target_hub">Target Hub (Max Degree)</option>
-                    <option value="random">Random Node</option>
+                    <option value="target_hub">Target Critical Hub (Max Load)</option>
+                    <option value="random">Random Component Fault</option>
                 </select>
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-mode active" id="btn-mode-shock" title="Click nodes to shock/fail them">Shock ⚡</button>
-                <button class="btn btn-mode" id="btn-mode-cut" title="Click links to isolate/sever them">Cut Link ✂️</button>
+                <button class="btn btn-mode active" id="btn-mode-shock" title="Click node to inject shock event">Shock Target</button>
+                <button class="btn btn-mode" id="btn-mode-cut" title="Click link to isolate edge">Isolate Link</button>
             </div>
 
             <div class="btn-group">
-                <button class="btn btn-primary" id="btn-init" title="Reset network state (Shortcut: R)">Reset</button>
-                <button class="btn btn-danger" id="btn-attack">Attack</button>
-                <button class="btn" id="btn-step" title="Advance one step (Shortcut: S)">Step (t+1)</button>
-                <button class="btn" id="btn-play" title="Auto run step loop (Shortcut: Space)">Auto Play</button>
+                <button class="btn btn-primary" id="btn-init" title="Reset Network State [R]">Reset</button>
+                <button class="btn btn-danger" id="btn-attack">Trigger Shock</button>
+                <button class="btn" id="btn-step" title="Advance 1 Step [S]">Step (t+1)</button>
+                <button class="btn" id="btn-play" title="Auto Run Loop [Space]">Auto Run</button>
             </div>
 
             <div class="btn-group">
-                <button class="btn" id="btn-export-svg" title="Save SVG Snapshot">Export SVG</button>
-                <button class="btn" id="btn-export-json" title="Download Trajectory JSON Log">Export JSON</button>
+                <button class="btn" id="btn-export-svg" title="Save SVG Network Snapshot">Export SVG</button>
+                <button class="btn" id="btn-export-json" title="Download JSON Trajectory Log">Export JSON</button>
             </div>
         </div>
     </header>
@@ -468,49 +531,65 @@
     </div>
 
     <footer>
-        <div class="metrics-group">
-            <div class="metrics">
-                <div class="metric-unit">
-                    <span class="lbl">Step:</span>
-                    <span id="m-step" class="num">0</span>
-                </div>
-                <div class="metric-unit">
-                    <span class="lbl">Failed:</span>
-                    <span id="m-failed" class="num danger">0 / 80 (0.0%)</span>
-                </div>
-                <div class="metric-unit">
-                    <span class="lbl">Giant Component (P<sub>∞</sub>):</span>
-                    <span id="m-giant" class="num">1.000</span>
+        <div class="telemetry-left">
+            <div class="metric-unit">
+                <span class="lbl">Step Index</span>
+                <span id="m-step" class="num">0</span>
+            </div>
+            <div class="metric-unit">
+                <span class="lbl">Node Failures</span>
+                <span id="m-failed" class="num danger">0 / 80 (0.0%)</span>
+            </div>
+            <div class="metric-unit">
+                <span class="lbl">Giant Component (P_inf)</span>
+                <span id="m-giant" class="num">1.000</span>
+            </div>
+
+            <!-- Dynamic Domain Gauge Display -->
+            <div class="gauge-container" id="domain-gauge-box">
+                <svg id="gauge-svg" width="46" height="32"></svg>
+                <div class="gauge-text">
+                    <span class="gauge-title" id="gauge-title">Grid Frequency</span>
+                    <span class="gauge-value" id="gauge-val">60.00 Hz</span>
                 </div>
             </div>
 
-            <div class="chart-box">
-                <span class="chart-lbl">Trajectory:</span>
-                <svg id="chart-svg" width="220" height="42"></svg>
+            <div class="metric-unit">
+                <span class="lbl" id="kpi1-lbl">Unsupplied Demand</span>
+                <span id="kpi1-val" class="num warning">0.0 MW</span>
             </div>
+            <div class="metric-unit">
+                <span class="lbl" id="kpi2-lbl">Impacted Population</span>
+                <span id="kpi2-val" class="num">0 Citizens</span>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <span class="chart-lbl">Trajectory Log</span>
+            <svg id="chart-svg" width="220" height="42"></svg>
         </div>
 
         <div class="legend">
             <div class="legend-item">
-                <div class="swatch" style="background: #2563eb"></div> Healthy
+                <div class="swatch" style="background: #2563eb"></div> Operational
             </div>
             <div class="legend-item">
                 <div class="swatch" style="background: #d97706"></div> Near Capacity (>85%)
             </div>
             <div class="legend-item">
-                <div class="swatch" style="background: #dc2626"></div> Failed
+                <div class="swatch" style="background: #dc2626"></div> Failed / Tripped
             </div>
             <div class="legend-item">
-                <div class="swatch" style="background: #94a3b8; border-radius: 0; width: 12px; height: 2px;"></div> Severed Link
+                <div class="swatch" style="background: #475569; width: 10px; height: 2px;"></div> Severed Edge
             </div>
         </div>
     </footer>
 
-    <!-- Onboarding Multi-Page Modal -->
+    <!-- Documentation & Help Modal -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal">
             <div class="modal-header-nav">
-                <div class="modal-title" id="modal-page-title">What This Simulator Is</div>
+                <div class="modal-title" id="modal-page-title">Technical System Documentation</div>
                 <div class="page-indicator" id="modal-page-indicator">Page 1 of 5</div>
             </div>
 
@@ -521,11 +600,11 @@
             <div class="modal-footer">
                 <label class="dont-show">
                     <input type="checkbox" id="chk-dont-show">
-                    Don't show again
+                    Do not display on launch
                 </label>
                 <div class="btn-group">
                     <button class="btn" id="btn-modal-prev" style="display: none;">Back</button>
-                    <button class="btn btn-primary" id="btn-modal-next">Next →</button>
+                    <button class="btn btn-primary" id="btn-modal-next">Next</button>
                 </div>
             </div>
         </div>
@@ -539,7 +618,92 @@
         let interactionMode = "shock"; // "shock" or "cut"
         let stepHistory = [];
 
-        // Multi-Page Onboarding Modal Logic
+        // Industry Domain Definitions
+        const DOMAINS = {
+            power_grid: {
+                name: "Electrical Power Grid",
+                nodeRoles: ["Power Plant", "Transmission Substation", "Distribution Transformer"],
+                loadUnit: "MW",
+                capacityUnit: "MW",
+                kpi1Label: "Unsupplied Demand",
+                kpi2Label: "Impacted Population",
+                gaugeTitle: "Grid Frequency",
+                calcPhysics: (failedPct, failedLoad, totalLoad) => {
+                    const totalMW = totalLoad * 25; // 25 MW scale factor
+                    const failedMW = failedLoad * 25;
+                    const freq = Math.max(58.00, 60.00 - (1.50 * (failedPct / 100))).toFixed(2);
+                    const pop = Math.round(failedMW * 850).toLocaleString();
+                    return {
+                        gaugeVal: `${freq} Hz`,
+                        gaugeCritical: parseFloat(freq) < 59.20,
+                        kpi1: `${(failedMW / 1000).toFixed(2)} GW`,
+                        kpi2: `${pop} Citizens`
+                    };
+                }
+            },
+            finance: {
+                name: "Interbank Financial System",
+                nodeRoles: ["Central Bank", "Commercial Investment Bank", "Regional Lender"],
+                loadUnit: "$B",
+                capacityUnit: "$B",
+                kpi1Label: "Capital Deficit",
+                kpi2Label: "Systemic Contagion Index",
+                gaugeTitle: "Solvency Index",
+                calcPhysics: (failedPct, failedLoad, totalLoad) => {
+                    const totalB = totalLoad * 4.2;
+                    const failedB = failedLoad * 4.2;
+                    const solvency = Math.max(0, 100 - (failedPct * 1.05)).toFixed(1);
+                    return {
+                        gaugeVal: `${solvency}%`,
+                        gaugeCritical: parseFloat(solvency) < 60.0,
+                        kpi1: `$${failedB.toFixed(1)}B USD`,
+                        kpi2: `${(failedPct * 0.95).toFixed(1)} / 100`
+                    };
+                }
+            },
+            cloud: {
+                name: "Cloud Microservices Architecture",
+                nodeRoles: ["Edge API Gateway", "Auth/Session Service", "DB Replica Cluster"],
+                loadUnit: "kRPS",
+                capacityUnit: "kRPS",
+                kpi1Label: "Global Error Rate",
+                kpi2Label: "HTTP Status Ratio",
+                gaugeTitle: "P99 Latency",
+                calcPhysics: (failedPct, failedLoad, totalLoad) => {
+                    const errRate = failedPct.toFixed(1);
+                    const lat = Math.round(12 + (4788 * Math.pow(failedPct / 100, 1.6)));
+                    const okPct = Math.max(0, 100 - failedPct).toFixed(1);
+                    return {
+                        gaugeVal: `${lat} ms`,
+                        gaugeCritical: lat > 1500,
+                        kpi1: `${errRate}% (503)`,
+                        kpi2: `200 OK (${okPct}%)`
+                    };
+                }
+            },
+            supply_chain: {
+                name: "Global Supply Chain Logistics",
+                nodeRoles: ["Container Terminal", "Rail Intermodal Hub", "Distribution Center"],
+                loadUnit: "kTEU",
+                capacityUnit: "kTEU",
+                kpi1Label: "Blocked Freight Volume",
+                kpi2Label: "Average Transit Delay",
+                gaugeTitle: "Bottleneck Ratio",
+                calcPhysics: (failedPct, failedLoad, totalLoad) => {
+                    const failedTEU = failedLoad * 12;
+                    const delayDays = (0.5 + (24.5 * (failedPct / 100))).toFixed(1);
+                    const bottleneck = (failedPct * 0.98).toFixed(1);
+                    return {
+                        gaugeVal: `${bottleneck}%`,
+                        gaugeCritical: parseFloat(bottleneck) > 40.0,
+                        kpi1: `${Math.round(failedTEU).toLocaleString()} TEU`,
+                        kpi2: `+${delayDays} Days`
+                    };
+                }
+            }
+        };
+
+        // Modal Documentation Logic
         const modalOverlay = document.getElementById("modal-overlay");
         const chkDontShow = document.getElementById("chk-dont-show");
         const btnModalPrev = document.getElementById("btn-modal-prev");
@@ -554,56 +718,57 @@
 
         const modalPages = [
             {
-                title: "1. What is a Cascading Failure?",
+                title: "1. Cascading Network Failure Dynamics",
                 content: `
-                    <p>In complex networks (like power grids, router backbones, or banking systems), components don't fail in isolation.</p>
+                    <p>Complex infrastructure networks (power grids, financial systems, microservices) rarely experience isolated component breakdown.</p>
                     <br/>
-                    <p>When one node fails, its load doesn't disappear—it gets <strong>redistributed to surviving neighbors</strong>. If a neighbor receives too much extra load, it exceeds its capacity threshold and fails too, triggering a self-amplifying <strong>positive feedback cascade</strong>.</p>
+                    <p>When a primary node fails, its operational load is <strong>redistributed to connected healthy neighbors</strong> according to remaining capacity buffers. If neighbors exceed their breakdown threshold, they trip sequentially, driving a self-amplifying positive feedback cascade.</p>
                 `
             },
             {
-                title: "2. Understanding Network Topologies",
+                title: "2. Network Topologies & Vulnerabilities",
                 content: `
-                    <p>Network structure (topology) shapes how stress propagates:</p>
+                    <p>Topology governs stress distribution pathways:</p>
                     <ul style="margin-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <li><strong>Barabási–Albert (Scale-Free):</strong> Dominated by highly connected <em>hubs</em>. Resilient to random faults, but vulnerable to targeted attacks on hubs.</li>
-                        <li><strong>Erdős–Rényi (Random):</strong> Uniform connectivity. Shows sudden, abrupt phase transitions once average stress crosses a critical threshold.</li>
+                        <li><strong>Barabási–Albert (Scale-Free):</strong> Defined by highly connected hubs. Highly resilient to random component faults, but vulnerable to targeted hub shock.</li>
+                        <li><strong>Erdős–Rényi (Random Grid):</strong> Homogeneous connectivity. Exhibits sharp phase transitions once stress crosses a critical threshold.</li>
                         <li><strong>Watts–Strogatz (Small World):</strong> High local clustering combined with long-range shortcuts.</li>
                     </ul>
                 `
             },
             {
-                title: "3. Load, Capacity & Tolerance Buffer (α)",
+                title: "3. Capacity Tolerance Buffer (alpha)",
                 content: `
-                    <p>Every node has two core values:</p>
+                    <p>Node breakdown conditions:</p>
                     <ul style="margin-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <li><strong>Load ($L_i$):</strong> Current traffic/demand handled by the node.</li>
-                        <li><strong>Capacity ($C_i$):</strong> Maximum breakdown threshold limit:
-                            <div style="background:#f1f5f9; padding:6px; border-radius:4px; font-family:monospace; margin-top:4px;">C_i = (1 + α) × L_i</div>
+                        <li><strong>Baseline Load (L_i):</strong> Operational demand handled by node i under initial equilibrium.</li>
+                        <li><strong>Max Capacity (C_i):</strong> Breakdown threshold calculated as:
+                            <div style="background:#1e293b; border:1px solid #334155; padding:6px; border-radius:3px; font-family:monospace; margin-top:4px; color:#38bdf8;">C_i = (1 + alpha) * L_i</div>
                         </li>
-                        <li><strong>Tolerance Buffer (α):</strong> The safety factor. Below critical threshold <strong>α_c</strong>, cascades collapse the entire network; above <strong>α_c</strong>, the system absorbs shocks.</li>
+                        <li><strong>Buffer (alpha):</strong> Safety margin factor. If alpha = 0.00, nodes run at 100% saturation and fail upon receiving any shed load.</li>
                     </ul>
                 `
             },
             {
-                title: "4. Presets & Controls",
+                title: "4. Industry Domain Modes",
                 content: `
-                    <p>Quick experiment presets & simulation controls:</p>
+                    <p>The simulator adapts unit telemetry and node roles per industry domain:</p>
                     <ul style="margin-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <li><strong>Preset Dropdown:</strong> Load classic scenarios like <em>Scale-Free Hub Shock</em> or <em>Low-Buffer Grid Crash</em>.</li>
-                        <li><strong>Attack Button:</strong> Strikes the largest hub or a random node.</li>
-                        <li><strong>Step / Auto Play:</strong> Advance time step-by-step or auto-run.</li>
+                        <li><strong>Electrical Power Grid:</strong> Tracks MW load, Grid Frequency (Hz), unsupplied demand, and population impact.</li>
+                        <li><strong>Financial System:</strong> Tracks liquidity exposure ($B USD) and systemic solvency contagion index.</li>
+                        <li><strong>Cloud Infrastructure:</strong> Tracks kRPS, HTTP 200/503 error rates, and P99 latency spikes (ms).</li>
+                        <li><strong>Supply Chain Logistics:</strong> Tracks cargo TEU volume, port bottlenecks, and transit delays.</li>
                     </ul>
                 `
             },
             {
-                title: "5. Circuit Breaker & Shortcuts",
+                title: "5. Circuit Breaker Defense & Keyboard Controls",
                 content: `
-                    <p>Defense & keyboard shortcuts:</p>
+                    <p>Interactive operational controls:</p>
                     <ul style="margin-left: 18px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <li><strong>Cut Link Mode (✂️):</strong> Switch mode and click on edges to sever them, preventing load transfer to critical subgraphs!</li>
-                        <li><strong>Keyboard Shortcuts:</strong> Press <strong>[Space]</strong> to Play/Pause, <strong>[S]</strong> to Step (t+1), and <strong>[R]</strong> to Reset.</li>
-                        <li><strong>Export:</strong> Save SVG images or JSON trajectory logs anytime.</li>
+                        <li><strong>Isolate Link Mode:</strong> Toggle mode to click network edges and sever them, isolating failing subgraphs before overload spreads.</li>
+                        <li><strong>Keyboard Shortcuts:</strong> Press <strong>[Space]</strong> to Play/Pause auto-run, <strong>[S]</strong> to advance 1 step, and <strong>[R]</strong> to reset network state.</li>
+                        <li><strong>Data Export:</strong> Save SVG vector graph snapshots or JSON trajectory telemetry.</li>
                     </ul>
                 `
             }
@@ -617,7 +782,7 @@
             pageContent.innerHTML = page.content;
 
             btnModalPrev.style.display = index === 0 ? "none" : "inline-block";
-            btnModalNext.textContent = index === modalPages.length - 1 ? "Finish & Explore" : "Next →";
+            btnModalNext.textContent = index === modalPages.length - 1 ? "Finish & Explore" : "Next";
         }
 
         if (localStorage.getItem("hide_intro_dialog") === "true") {
@@ -656,7 +821,13 @@
         document.getElementById("nodes").addEventListener("input", (e) => document.getElementById("nodes-val").textContent = e.target.value);
         document.getElementById("alpha").addEventListener("input", (e) => document.getElementById("alpha-val").textContent = parseFloat(e.target.value).toFixed(2));
 
-        // Interaction mode selector
+        // Domain Selector Handler
+        document.getElementById("domain").addEventListener("change", () => {
+            updateMetrics();
+            drawGraph();
+        });
+
+        // Mode selector
         document.getElementById("btn-mode-shock").addEventListener("click", () => setInteractionMode("shock"));
         document.getElementById("btn-mode-cut").addEventListener("click", () => setInteractionMode("cut"));
 
@@ -667,7 +838,7 @@
             drawGraph();
         }
 
-        // Preset Scenario Loader
+        // Preset Loader
         document.getElementById("preset").addEventListener("change", (e) => {
             const val = e.target.value;
             if (val === "scale_free_hub") {
@@ -700,7 +871,7 @@
             const N = parseInt(document.getElementById("nodes").value);
             const alpha = parseFloat(document.getElementById("alpha").value);
 
-            nodes = Array.from({ length: N }, (_, i) => ({ id: i, load: 0, capacity: 0, status: "healthy" }));
+            nodes = Array.from({ length: N }, (_, i) => ({ id: i, load: 0, capacity: 0, status: "healthy", role: "" }));
             links = [];
 
             if (topology === "barabasi_albert") {
@@ -750,11 +921,19 @@
                 degMap.set(t, degMap.get(t) + 1);
             });
 
+            const maxDeg = Math.max(1, ...Array.from(degMap.values()));
+
             nodes.forEach(n => {
-                let load = Math.max(1, degMap.get(n.id));
+                let deg = degMap.get(n.id) || 1;
+                let load = Math.max(1, deg);
                 n.load = load;
                 n.capacity = load * (1.0 + alpha);
                 n.status = "healthy";
+
+                // Assign node roles based on degree rank
+                if (deg >= maxDeg * 0.7) n.roleIdx = 0; // Hub
+                else if (deg >= maxDeg * 0.35) n.roleIdx = 1; // Intermediate
+                else n.roleIdx = 2; // Edge component
             });
 
             step = 0;
@@ -766,6 +945,9 @@
 
         function drawGraph() {
             container.selectAll("*").remove();
+
+            const domainKey = document.getElementById("domain").value;
+            const domainDef = DOMAINS[domainKey];
 
             const link = container.append("g")
                 .selectAll("line")
@@ -787,19 +969,49 @@
                     }
                 });
 
-            const node = container.append("g")
-                .selectAll("circle")
+            const nodeGroup = container.append("g")
+                .selectAll("g")
                 .data(nodes)
-                .join("circle")
-                .attr("class", "node")
-                .attr("r", d => Math.max(5, Math.sqrt(d.capacity) * 2.8))
-                .attr("fill", d => getNodeColor(d))
+                .join("g")
+                .attr("class", "node-g")
                 .call(d3.drag()
                     .on("start", (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
                     .on("drag", (e, d) => { d.fx = e.x; d.fy = e.y; })
                     .on("end", (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }));
 
-            node.on("click", (e, d) => {
+            // Render Technical Shapes per Role
+            nodeGroup.each(function (d) {
+                const el = d3.select(this);
+                const color = getNodeColor(d);
+                const size = Math.max(6, Math.sqrt(d.capacity) * 2.8);
+
+                if (d.roleIdx === 0) {
+                    // Square for primary hubs / plants / central banks
+                    el.append("rect")
+                        .attr("class", "node")
+                        .attr("x", -size)
+                        .attr("y", -size)
+                        .attr("width", size * 2)
+                        .attr("height", size * 2)
+                        .attr("fill", color)
+                        .attr("rx", 2);
+                } else if (d.roleIdx === 1) {
+                    // Diamond for substations / commercial banks
+                    const path = `M 0 ${-size * 1.3} L ${size * 1.3} 0 L 0 ${size * 1.3} L ${-size * 1.3} 0 Z`;
+                    el.append("path")
+                        .attr("class", "node")
+                        .attr("d", path)
+                        .attr("fill", color);
+                } else {
+                    // Circle for local transformers / lenders / DB nodes
+                    el.append("circle")
+                        .attr("class", "node")
+                        .attr("r", size)
+                        .attr("fill", color);
+                }
+            });
+
+            nodeGroup.on("click", (e, d) => {
                 if (interactionMode === "shock") {
                     if (d.status === "healthy") {
                         d.status = "failed";
@@ -812,14 +1024,17 @@
                 }
             });
 
-            node.on("mouseover", (e, d) => {
+            nodeGroup.on("mouseover", (e, d) => {
                 const remBuf = (d.capacity - d.load).toFixed(2);
-                const bufStr = d.status === "failed" ? "0.00 (FAILED)" : (remBuf >= 0 ? `+${remBuf}` : `${remBuf} (OVERLOAD)`);
+                const roleName = domainDef.nodeRoles[d.roleIdx] || "Node Component";
+                const unit = domainDef.loadUnit;
+                const bufStr = d.status === "failed" ? `0.00 ${unit} (TRIPPED)` : (remBuf >= 0 ? `+${remBuf} ${unit}` : `${remBuf} ${unit} (OVERLOAD)`);
+
                 d3.select("#tooltip")
                     .style("opacity", 1)
                     .style("left", (e.pageX + 12) + "px")
                     .style("top", (e.pageY - 12) + "px")
-                    .html(`Node #${d.id}<br/>Status: ${d.status.toUpperCase()}<br/>Load: ${d.load.toFixed(2)} / ${d.capacity.toFixed(2)}<br/>Buffer Margin: ${bufStr}`);
+                    .html(`[${roleName.toUpperCase()} #${d.id}]<br/>Status: ${d.status.toUpperCase()}<br/>Load: ${d.load.toFixed(2)} / ${d.capacity.toFixed(2)} ${unit}<br/>Buffer Margin: ${bufStr}`);
             }).on("mouseout", () => d3.select("#tooltip").style("opacity", 0));
 
             simulation = d3.forceSimulation(nodes)
@@ -828,7 +1043,7 @@
                 .force("center", d3.forceCenter(width / 2, height / 2))
                 .on("tick", () => {
                     link.attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y);
-                    node.attr("cx", d => d.x).attr("cy", d => d.y);
+                    nodeGroup.attr("transform", d => `translate(${d.x},${d.y})`);
                 });
         }
 
@@ -838,8 +1053,8 @@
                 .attr("cy", d.y || height / 2)
                 .attr("r", Math.max(5, Math.sqrt(d.capacity) * 2.8))
                 .attr("fill", "none")
-                .attr("stroke", "#dc2626")
-                .attr("stroke-width", 3)
+                .attr("stroke", "#ef4444")
+                .attr("stroke-width", 2.5)
                 .transition().duration(500)
                 .attr("r", 45)
                 .style("opacity", 0)
@@ -852,8 +1067,8 @@
                 .attr("class", "flow-particle")
                 .attr("cx", source.x)
                 .attr("cy", source.y)
-                .attr("r", 4)
-                .attr("fill", "#f59e0b")
+                .attr("r", 3.5)
+                .attr("fill", "#38bdf8")
                 .transition()
                 .duration(420)
                 .ease(d3.easeQuadOut)
@@ -863,8 +1078,8 @@
         }
 
         function getNodeColor(d) {
-            if (d.status === "failed") return "#dc2626";
-            if (d.load / d.capacity > 0.85) return "#d97706";
+            if (d.status === "failed") return "#ef4444";
+            if (d.load / d.capacity > 0.85) return "#f59e0b";
             return "#2563eb";
         }
 
@@ -946,8 +1161,18 @@
             const yScalePct = d3.scaleLinear().domain([0, 100]).range([cH - 4, 4]);
             const yScaleGiant = d3.scaleLinear().domain([0, 1]).range([cH - 4, 4]);
 
+            // Grid lines
+            chartSvg.append("line").attr("x1", 0).attr("y1", cH / 2).attr("x2", cW).attr("y2", cH / 2).attr("stroke", "#1e293b").attr("stroke-dasharray", "2,2");
+
+            const areaPct = d3.area().x(d => xScale(d.step)).y0(cH).y1(d => yScalePct(d.failedPct)).curve(d3.curveMonotoneX);
             const linePct = d3.line().x(d => xScale(d.step)).y(d => yScalePct(d.failedPct)).curve(d3.curveMonotoneX);
             const lineGiant = d3.line().x(d => xScale(d.step)).y(d => yScaleGiant(d.giantCC)).curve(d3.curveMonotoneX);
+
+            // Shaded Area for Failed %
+            chartSvg.append("path")
+                .datum(stepHistory)
+                .attr("fill", "rgba(239, 68, 68, 0.15)")
+                .attr("d", areaPct);
 
             chartSvg.append("path")
                 .datum(stepHistory)
@@ -959,9 +1184,34 @@
             chartSvg.append("path")
                 .datum(stepHistory)
                 .attr("fill", "none")
-                .attr("stroke", "#dc2626")
+                .attr("stroke", "#ef4444")
                 .attr("stroke-width", 1.5)
                 .attr("d", linePct);
+        }
+
+        function updateGauge(title, valStr, isCritical) {
+            document.getElementById("gauge-title").textContent = title;
+            const valEl = document.getElementById("gauge-val");
+            valEl.textContent = valStr;
+            valEl.classList.toggle("critical", isCritical);
+
+            const gSvg = d3.select("#gauge-svg");
+            gSvg.selectAll("*").remove();
+
+            // Simple semi-circle arc gauge
+            const arc = d3.arc().innerRadius(10).outerRadius(14).startAngle(-Math.PI / 2).endAngle(Math.PI / 2);
+            gSvg.append("path").attr("transform", "translate(23,24)").attr("d", arc).attr("fill", "#1e293b");
+
+            const fillArc = d3.arc()
+                .innerRadius(10)
+                .outerRadius(14)
+                .startAngle(-Math.PI / 2)
+                .endAngle(-Math.PI / 2 + (Math.PI * (isCritical ? 0.95 : 0.4)));
+
+            gSvg.append("path")
+                .attr("transform", "translate(23,24)")
+                .attr("d", fillArc)
+                .attr("fill", isCritical ? "#ef4444" : "#38bdf8");
         }
 
         function updateVisuals() {
@@ -971,16 +1221,34 @@
         }
 
         function updateMetrics() {
-            const failed = nodes.filter(n => n.status === "failed").length;
-            const pct = ((failed / nodes.length) * 100).toFixed(1);
+            const domainKey = document.getElementById("domain").value;
+            const domainDef = DOMAINS[domainKey];
+
+            const failedNodes = nodes.filter(n => n.status === "failed");
+            const failedCount = failedNodes.length;
+            const pct = (failedCount / nodes.length) * 100;
+            const giantRatio = 1 - (failedCount / nodes.length);
+
+            const totalLoad = nodes.reduce((acc, n) => acc + n.capacity, 0) || 1;
+            const failedLoad = failedNodes.reduce((acc, n) => acc + n.capacity, 0);
+
             document.getElementById("m-step").textContent = step;
-            document.getElementById("m-failed").textContent = `${failed} / ${nodes.length} (${pct}%)`;
-            document.getElementById("m-giant").textContent = (1 - (failed / nodes.length)).toFixed(3);
+            document.getElementById("m-failed").textContent = `${failedCount} / ${nodes.length} (${pct.toFixed(1)}%)`;
+            document.getElementById("m-giant").textContent = giantRatio.toFixed(3);
+
+            // Calculate Physics KPIs
+            const phys = domainDef.calcPhysics(pct, failedLoad, totalLoad);
+            document.getElementById("kpi1-lbl").textContent = domainDef.kpi1Label;
+            document.getElementById("kpi1-val").textContent = phys.kpi1;
+            document.getElementById("kpi2-lbl").textContent = domainDef.kpi2Label;
+            document.getElementById("kpi2-val").textContent = phys.kpi2;
+
+            updateGauge(domainDef.gaugeTitle, phys.gaugeVal, phys.gaugeCritical);
         }
 
         function togglePlay() {
             isPlaying = !isPlaying;
-            document.getElementById("btn-play").textContent = isPlaying ? "Pause" : "Auto Play";
+            document.getElementById("btn-play").textContent = isPlaying ? "Pause Loop" : "Auto Run";
             if (isPlaying) timer = setInterval(stepCascade, 500);
             else clearInterval(timer);
         }
@@ -994,14 +1262,16 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `cascade_graph_step_${step}.svg`;
+            a.download = `network_telemetry_step_${step}.svg`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
         });
 
         document.getElementById("btn-export-json").addEventListener("click", () => {
+            const domainKey = document.getElementById("domain").value;
             const payload = {
+                domain: DOMAINS[domainKey].name,
                 topology: document.getElementById("topology").value,
                 nodes_count: nodes.length,
                 alpha: parseFloat(document.getElementById("alpha").value),
@@ -1013,7 +1283,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `cascade_telemetry_step_${step}.json`;
+            a.download = `cascade_telemetry_${domainKey}_step_${step}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
